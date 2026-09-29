@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>剩食大亨｜深夜打烊挑戰</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family:
+                Arial,
+                "Microsoft JhengHei",
+                sans-serif;
+            background: #0b2b26;
+            color: #ffffff;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 0;
+        }
+
+        /* 標題 */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 42px;
+        }
+
+        .header p {
+            color: #b7d8ce;
+            font-size: 18px;
+            margin-top: 10px;
+        }
+
+        /* 數值區 */
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .stat {
+            background: #143f37;
+            border: 1px solid #28675a;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .stat-title {
+            color: #a8cbc1;
+            font-size: 15px;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        /* 遊戲卡片 */
+        .game-card {
+            background: #f4f7f5;
+            color: #18352f;
+            border-radius: 20px;
+            padding: 35px;
+            min-height: 400px;
+        }
+
+        .day {
+            display: inline-block;
+            background: #1d755f;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .game-card h2 {
+            margin-top: 0;
+            font-size: 28px;
+        }
+
+        .story {
+            background: #e7f1ed;
+            padding: 20px;
+            border-radius: 12px;
+            line-height: 1.8;
+            margin: 20px 0;
+        }
+
+        /* 選項 */
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            width: 100%;
+            padding: 18px;
+            border: 2px solid #c7d9d3;
+            background: white;
+            border-radius: 12px;
+            text-align: left;
+            cursor: pointer;
+            font-size: 17px;
+            transition: 0.2s;
+        }
+
+        .option:hover {
+            border-color: #1d755f;
+            background: #eef8f4;
+            transform: translateY(-2px);
+        }
+
+        .option:disabled {
+            cursor: default;
+            opacity: 0.7;
+            transform: none;
+        }
+
+        .option-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .option-detail {
+            color: #60756f;
+            font-size: 14px;
+        }
+
+        /* 結果 */
+        .feedback {
+            display: none;
+            margin-top: 20px;
+            padding: 18px;
+            border-radius: 12px;
+            background: #fff5cf;
+            border-left: 5px solid #e2ad20;
+            line-height: 1.7;
+        }
+
+        .next-btn {
+            display: none;
+            margin-top: 20px;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 10px;
+            background: #1d755f;
+            color: white;
+            font-size: 17px;
+            cursor: pointer;
+        }
+
+        .next-btn:hover {
+            background: #155b4a;
+        }
+
+        /* 最終結果 */
+        #resultScreen {
+            display: none;
+            text-align: center;
+        }
+
+        .result-icon {
+            font-size: 70px;
+            margin-bottom: 10px;
+        }
+
+        .result-title {
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
+
+        .result-text {
+            line-height: 1.8;
+            color: #526761;
+        }
+
+        .restart-btn {
+            margin-top: 25px;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            background: #1d755f;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .restart-btn:hover {
+            background: #155b4a;
+        }
+
+        /* 手機版 */
+        @media (max-width: 700px) {
+
+            .container {
+                width: 94%;
+                padding: 20px 0;
+            }
+
+            .header h1 {
+                font-size: 30px;
+            }
+
+            .header p {
+                font-size: 15px;
+            }
+
+            .dashboard {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .stat {
+                padding: 15px;
+            }
+
+            .stat-value {
+                font-size: 25px;
+            }
+
+            .game-card {
+                padding: 22px;
+            }
+
+            .game-card h2 {
+                font-size: 23px;
+            }
+
+            .option {
+                padding: 15px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- 標題 -->
+    <div class="header">
+        <h1>🍞 剩食大亨</h1>
+        <p>深夜打烊挑戰｜SDG 12 剩食經營模擬遊戲</p>
+    </div>
+
+    <!-- 數值 -->
+    <div class="dashboard">
+
+        <div class="stat">
+            <div class="stat-title">🌱 搶救剩食</div>
+            <div class="stat-value" id="food">0</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-title">💰 店鋪淨利</div>
+            <div class="stat-value" id="money">$3000</div>
+        </div>
+
+        <div class="stat">
+            <div class="stat-title">☁️ 累積甲烷排放</div>
+            <div class="stat-value" id="methane">0</div>
+        </div>
+
+    </div>
+
+    <!-- 遊戲 -->
+    <div class="game-card">
+
+        <div id="gameScreen">
+
+            <div class="day" id="dayTitle">
+                DAY 1
+            </div>
+
+            <h2 id="question">
+                深夜打烊，你會怎麼處理剩下的麵包？
+            </h2>
+
+            <div class="story" id="story">
+                晚上 21:30，店裡還剩下 25 個麵包。
+                如果直接丟掉，不只浪費食物，也會增加環境負擔。
+                你是店長，現在必須做出決定。
+            </div>
+
+            <div class="options" id="options"></div>
+
+            <div class="feedback" id="feedback"></div>
+
+            <button class="next-btn" id="nextButton">
+                下一天 →
+            </button>
+
+        </div>
+
+        <!-- 最終結果 -->
+        <div id="resultScreen">
+
+            <div class="result-icon" id="resultIcon">
+                🏆
+            </div>
+
+            <div class="result-title" id="resultTitle">
+                遊戲結束
+            </div>
+
+            <div class="result-text" id="resultText">
+            </div>
+
+            <button class="restart-btn" id="restartButton">
+                🔄 再玩一次
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    /* =========================
+       遊戲資料
+    ========================= */
+
+    const levels = [
+
+        {
+            day: "DAY 1",
+            title: "深夜打烊，你會怎麼處理剩下的麵包？",
+
+            story:
+                "晚上 21:30，店裡還剩下 25 個麵包。" +
+                "如果直接丟掉，不只浪費食物，也會增加環境負擔。" +
+                "你是店長，現在必須做出決定。",
+
+            options: [
+
+                {
+                    title: "A｜直接丟掉",
+                    detail: "快速處理剩食，但可能造成更多浪費。",
+                    food: 0,
+                    money: -1500,
+                    methane: 40
+                },
+
+                {
+                    title: "B｜全部免費送出",
+                    detail: "把麵包送給有需要的人。",
+                    food: 25,
+                    money: -1500,
+                    methane: 0
+                },
+
+                {
+                    title: "C｜製作 Too Good To Go 驚喜包",
+                    detail: "把剩食重新包裝，以優惠價格出售。",
+                    food: 25,
+                    money: 500,
+                    methane: 0
+                }
+
+            ]
+
+        },
+
+        {
+            day: "DAY 2",
+            title: "顧客抱怨：驚喜包裡怎麼都是白吐司？",
+
+            story:
+                "隔天，一位顧客拿著昨天購買的驚喜包回來。" +
+                "他有點失望，抱怨裡面大多都是普通白吐司。" +
+                "你會怎麼回應？",
+
+            options: [
+
+                {
+                    title: "A｜直接回嗆顧客",
+                    detail: "認為驚喜包本來就是隨機商品。",
+                    food: 0,
+                    money: -1000,
+                    methane: 0
+                },
+
+                {
+                    title: "B｜道歉並推薦拿鐵",
+                    detail: "改善顧客體驗，同時增加其他商品的銷售。",
+                    food: 10,
+                    money: 350,
+                    methane: 0
+                }
+
+            ]
+
+        },
+
+        {
+            day: "DAY 3",
+            title: "麵包師傅提出一個新想法",
+
+            story:
+                "麵包師傅發現驚喜包最近賣得不錯，" +
+                "於是提議：「我們乾脆每天多烤 50 個便宜麵包，" +
+                "專門放進驚喜包裡！」" +
+                "這樣真的能解決剩食問題嗎？",
+
+            options: [
+
+                {
+                    title: "A｜接受這個方法",
+                    detail: "增加驚喜包供應，但也可能製造新的剩食。",
+                    food: 0,
+                    money: 1500,
+                    methane: 50
+                },
+
+                {
+                    title: "B｜拒絕並利用銷售資料調整產量",
+                    detail: "根據實際需求安排生產，減少不必要的製作。",
+                    food: 15,
+                    money: 800,
+                    methane: 0
+                }
+
+            ]
+
+        }
+
+    ];
+
+
+    /* =========================
+       遊戲狀態
+    ========================= */
+
+    let gameState = {
+        food: 0,
+        money: 3000,
+        methane: 0,
+        day: 0
+    };
+
+
+    let answered = false;
+
+
+    /* =========================
+       取得 HTML 元素
+    ========================= */
+
+    const foodElement = document.getElementById("food");
+    const moneyElement = document.getElementById("money");
+    const methaneElement = document.getElementById("methane");
+
+    const dayTitle = document.getElementById("dayTitle");
+    const question = document.getElementById("question");
+    const story = document.getElementById("story");
+
+    const optionsElement = document.getElementById("options");
+    const feedbackElement = document.getElementById("feedback");
+
+    const nextButton = document.getElementById("nextButton");
+
+    const gameScreen = document.getElementById("gameScreen");
+    const resultScreen = document.getElementById("resultScreen");
+
+    const resultIcon = document.getElementById("resultIcon");
+    const resultTitle = document.getElementById("resultTitle");
+    const resultText = document.getElementById("resultText");
+
+    const restartButton = document.getElementById("restartButton");
+
+
+    /* =========================
+       更新數值
+    ========================= */
+
+    function updateStatus() {
+
+        foodElement.textContent = gameState.food;
+
+        moneyElement.textContent =
+            "$" + gameState.money;
+
+        methaneElement.textContent =
+            gameState.methane;
+
+    }
+
+
+    /* =========================
+       顯示關卡
+    ========================= */
+
+    function showLevel() {
+
+        answered = false;
+
+        const level = levels[gameState.day];
+
+        dayTitle.textContent = level.day;
+
+        question.textContent = level.title;
+
+        story.textContent = level.story;
+
+        optionsElement.innerHTML = "";
+
+        feedbackElement.style.display = "none";
+
+        nextButton.style.display = "none";
+
+
+        level.options.forEach(function(option, index) {
+
+            const button = document.createElement("button");
+
+            button.className = "option";
+
+            button.innerHTML =
+                "<div class='option-title'>" +
+                option.title +
+                "</div>" +
+
+                "<div class='option-detail'>" +
+                option.detail +
+                "</div>";
+
+
+            button.addEventListener("click", function() {
+
+                chooseOption(index);
+
+            });
+
+
+            optionsElement.appendChild(button);
+
+        });
+
+    }
+
+
+    /* =========================
+       選擇選項
+    ========================= */
+
+    function chooseOption(index) {
+
+        if (answered) {
+            return;
+        }
+
+        answered = true;
+
+        const level = levels[gameState.day];
+
+        const option = level.options[index];
+
+
+        gameState.food += option.food;
+
+        gameState.money += option.money;
+
+        gameState.methane += option.methane;
+
+
+        updateStatus();
+
+
+        const buttons =
+            document.querySelectorAll(".option");
+
+
+        buttons.forEach(function(button) {
+
+            button.disabled = true;
+
+        });
+
+
+        let message = "";
+
+
+        if (gameState.day === 0) {
+
+            if (index === 0) {
+
+                message =
+                    "你選擇直接丟棄麵包。雖然快速，但造成了食物浪費，也增加了甲烷排放。";
+
+            } else if (index === 1) {
+
+                message =
+                    "你選擇免費送出麵包。成功避免食物被丟棄，但店鋪也承擔了成本。";
+
+            } else {
+
+                message =
+                    "你選擇製作驚喜包！不但成功搶救 25 個麵包，也讓店鋪增加收入。";
+
+            }
+
+        }
+
+
+        if (gameState.day === 1) {
+
+            if (index === 0) {
+
+                message =
+                    "雖然你堅持自己的立場，但顧客體驗受到影響，店鋪也因此損失收入。";
+
+            } else {
+
+                message =
+                    "你先理解顧客的感受，再推薦其他商品。這不但化解問題，也創造了額外收入。";
+
+            }
+
+        }
+
+
+        if (gameState.day === 2) {
+
+            if (index === 0) {
+
+                message =
+                    "短期看起來賺了錢，但為了驚喜包大量生產，反而可能製造更多剩食。";
+
+            } else {
+
+                message =
+                    "你選擇利用銷售資料調整生產量。比起大量製造再處理剩食，從源頭減少浪費更有效。";
+
+            }
+
+        }
+
+
+        feedbackElement.innerHTML =
+            "<strong>📢 你的選擇</strong><br>" +
+            message;
+
+
+        feedbackElement.style.display = "block";
+
+
+        if (gameState.day === levels.length - 1) {
+
+            nextButton.textContent = "查看最終結果 →";
+
+        } else {
+
+            nextButton.textContent = "下一天 →";
+
+        }
+
+
+        nextButton.style.display = "inline-block";
+
+    }
+
+
+    /* =========================
+       下一天
+    ========================= */
+
+    function nextDay() {
+
+        if (!answered) {
+            return;
+        }
+
+
+        gameState.day++;
+
+
+        if (gameState.day >= levels.length) {
+
+            showResult();
+
+        } else {
+
+            showLevel();
+
+        }
+
+    }
+
+
+    /* =========================
+       最終結果
+    ========================= */
+
+    function showResult() {
+
+        gameScreen.style.display = "none";
+
+        resultScreen.style.display = "block";
+
+
+        if (
+            gameState.methane === 0 &&
+            gameState.money >= 3500
+        ) {
+
+            resultIcon.textContent = "🏆";
+
+            resultTitle.textContent =
+                "🌱 綠色傳奇店長";
+
+            resultText.innerHTML =
+                "恭喜你！<br><br>" +
+
+                "你成功在經營店鋪的同時，" +
+                "降低食物浪費與環境負擔。<br><br>" +
+
+                "🌱 搶救剩食：" +
+                gameState.food + "<br>" +
+
+                "💰 店鋪淨利：" +
+                "$" + gameState.money + "<br>" +
+
+                "☁️ 甲烷排放：" +
+                gameState.methane;
+
+        } else {
+
+            resultIcon.textContent = "🍞";
+
+            resultTitle.textContent =
+                "挑戰完成！";
+
+            resultText.innerHTML =
+                "你完成了三天的剩食經營挑戰。<br><br>" +
+
+                "這次的選擇也讓你發現：" +
+                "剩食管理不只是把食物賣出去，" +
+                "更重要的是從生產、銷售到消費，" +
+                "重新思考每一個決定。<br><br>" +
+
+                "🌱 搶救剩食：" +
+                gameState.food + "<br>" +
+
+                "💰 店鋪淨利：" +
+                "$" + gameState.money + "<br>" +
+
+                "☁️ 甲烷排放：" +
+                gameState.methane;
+
+        }
+
+    }
+
+
+    /* =========================
+       重新開始
+    ========================= */
+
+    function restartGame() {
+
+        gameState = {
+            food: 0,
+            money: 3000,
+            methane: 0,
+            day: 0
+        };
+
+
+        gameScreen.style.display = "block";
+
+        resultScreen.style.display = "none";
+
+
+        updateStatus();
+
+        showLevel();
+
+    }
+
+
+    /* =========================
+       按鈕事件
+    ========================= */
+
+    nextButton.addEventListener("click", function() {
+
+        nextDay();
+
+    });
+
+
+    restartButton.addEventListener("click", function() {
+
+        restartGame();
+
+    });
+
+
+    /* =========================
+       啟動遊戲
+    ========================= */
+
+    updateStatus();
+
+    showLevel();
+
+</script>
+
+</body>
+</html>
